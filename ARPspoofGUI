@@ -30,15 +30,18 @@ def myip():
     return myip[myip.index('IPv4') + 12]
 
 def arptable():
+    def arptable_(i):
+        target = TLIST[i].split()
+        targettext = Button(gui, text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: '
+        +target[0]+ ' MAC: ' + target[1], fg='#47C83E', bg='black', font=50, height=1,command=lambda: arpspoof(TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
+        targettext.grid(row=(TLIST.index(target[0] + ' ' + target[1])), column=1)
     i = 1
     gateway = IntVar()
     while(i <= TLIST[0]):
         target = TLIST[i].split()
         gatewaycheck = Checkbutton(gui, variable=gateway, bg='black', onvalue=TLIST.index(target[0] + ' ' + target[1]))
         gatewaycheck.grid(row=(TLIST.index(target[0] + ' ' + target[1])))
-        targettext = Button(gui,text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: ' + target[0]
-        + ' MAC: ' + target[1], fg='#47C83E', bg='black', font=50, height=1,command=lambda: arpspoof(TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
-        targettext.grid(row=(TLIST.index(target[0] + ' ' + target[1])), column=1)
+        arptable_(i)
         i = i + 1
 
 def multiarp(arg1 ,scanrange):
