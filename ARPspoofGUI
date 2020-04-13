@@ -31,7 +31,7 @@ def myip():
 
 def arptable():
     i = 1
-    gateway = IntVar
+    gateway = IntVar()
     while(i <= TLIST[0]):
         target = TLIST[i].split()
         gatewaycheck = Checkbutton(gui, variable=gateway, bg='black', onvalue=TLIST.index(target[0] + ' ' + target[1]))
