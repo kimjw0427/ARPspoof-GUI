@@ -29,18 +29,17 @@ def myip():
     myip = myip.split()
     return myip[myip.index('IPv4') + 12]
 
-def arptable(target):
-    time.sleep(1)
-    gateway = IntVar()
-    target = target.split()
-
-    TLIST.append(target[0] + ' ' + target[1])
-    gatewaycheck = Checkbutton(gui, variable = gateway,bg = 'black', onvalue = TLIST.index(target[0] + ' ' + target[1]))
-    gatewaycheck.grid(row = (TLIST.index(target[0] + ' ' + target[1])))
-    targettext = Button(gui, text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: ' + target[0]
-    + ' MAC: ' + target[1], fg = '#47C83E', bg = 'black', font = 50, height= 1, command = lambda: arpspoof
-    (TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
-    targettext.grid(row = (TLIST.index(target[0] + ' ' + target[1])), column = 1)
+def arptable():
+    i = 1
+    gateway = IntVar
+    while(i <= TLIST[0]):
+        target = TLIST[i].split()
+        gatewaycheck = Checkbutton(gui, variable=gateway, bg='black', onvalue=TLIST.index(target[0] + ' ' + target[1]))
+        gatewaycheck.grid(row=(TLIST.index(target[0] + ' ' + target[1])))
+        targettext = Button(gui,text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: ' + target[0]
+        + ' MAC: ' + target[1], fg='#47C83E', bg='black', font=50, height=1,command=lambda: arpspoof(TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
+        targettext.grid(row=(TLIST.index(target[0] + ' ' + target[1])), column=1)
+        i = i + 1
 
 def multiarp(arg1 ,scanrange):
     scanip = str(scanrange) + str(arg1)
@@ -49,7 +48,10 @@ def multiarp(arg1 ,scanrange):
     for snt, recv in ans:
         if recv:
             target = recv[ARP].psrc + ' ' + recv[Ether].src
-            arptable(target)
+            target = target.split()
+            global TLIST
+            TLIST.append(target[0] + ' ' + target[1])
+            TLIST[0] = TLIST.index(target[0] + ' ' + target[1])
 
 def arpscan(scanip):
     scanrange = scanip.split('.')
@@ -57,6 +59,9 @@ def arpscan(scanip):
     for length in range(0,255):
          arpthread = threading.Thread(target=multiarp, name = 'ARPthread' ,args = (str(length), str(scanrange)))
          arpthread.start()
+    while (arpthread.is_alive()):
+        time.sleep(1)
+    arptable()
 
 def start():
     arpscan(myip())
