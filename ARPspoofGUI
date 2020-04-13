@@ -1,0 +1,72 @@
+# -*- coding:utf-8 -*-
+from scapy.all import *
+from tkinter import *
+import os
+import threading
+
+TLIST = ['타겟리스트초기화']
+SLIST = ['스푸핑리스트초기화']
+
+def errormassege():
+    errorm = Tk()
+    gui.resizable(False, False)
+    errortext = Label(errorm, text='게이트웨이를 체크해주세요.')
+    errortext.pack()
+    quitbutton = Button(errorm, text='나가기', command=errorm.destroy)
+    quitbutton.pack()
+    errorm.mainloop()
+
+
+def arpspoof(target, gateway):
+    target = TLIST[target].split()
+    if gateway == 0:
+        errormassege()
+    else:
+        print(str(target[0])+ ' ' + str(target[1]) + ' ' + str(gateway))
+
+def myip():
+    myip = os.popen('ipconfig').read()
+    myip = myip.split()
+    return myip[myip.index('IPv4') + 12]
+
+def arptable(target):
+    time.sleep(1)
+    gateway = IntVar()
+    target = target.split()
+
+    TLIST.append(target[0] + ' ' + target[1])
+    gatewaycheck = Checkbutton(gui, variable = gateway,bg = 'black', onvalue = TLIST.index(target[0] + ' ' + target[1]))
+    gatewaycheck.grid(row = (TLIST.index(target[0] + ' ' + target[1])))
+    targettext = Button(gui, text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: ' + target[0]
+    + ' MAC: ' + target[1], fg = '#47C83E', bg = 'black', font = 50, height= 1, command = lambda: arpspoof
+    (TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
+    targettext.grid(row = (TLIST.index(target[0] + ' ' + target[1])), column = 1)
+
+def multiarp(arg1 ,scanrange):
+    scanip = str(scanrange) + str(arg1)
+    _pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=str(scanip))
+    ans, unans = srp( _pkt, timeout=2, verbose=False)
+    for snt, recv in ans:
+        if recv:
+            target = recv[ARP].psrc + ' ' + recv[Ether].src
+            arptable(target)
+
+def arpscan(scanip):
+    scanrange = scanip.split('.')
+    scanrange = scanrange[0] + '.' + scanrange[1] + '.' +scanrange[2] + '.'
+    for length in range(0,255):
+         arpthread = threading.Thread(target=multiarp, name = 'ARPthread' ,args = (str(length), str(scanrange)))
+         arpthread.start()
+
+def start():
+    arpscan(myip())
+
+
+gui = Tk()
+gui.title("EasyARPspoof")
+gui.geometry('960x540')
+gui.configure(background = 'black')
+gui.resizable(False, False)
+startbutton = Button(gui, text='스캔', command = start,height = 2,bg = 'black', fg = '#47C83E', font = 50, borderwidth = 0)
+startbutton.place(x=900, y= 10)
+gui.mainloop()
