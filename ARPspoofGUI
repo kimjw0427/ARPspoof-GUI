@@ -6,6 +6,7 @@ import threading
 
 TLIST = ['타겟리스트초기화']
 SLIST = ['스푸핑리스트초기화']
+gateway = 0
 
 def errormassege():
     errorm = Tk()
@@ -30,6 +31,7 @@ def myip():
     return myip[myip.index('IPv4') + 12]
 
 def arptable(target):
+    global gateway
     time.sleep(1)
     gateway = IntVar()
     target = target.split()
