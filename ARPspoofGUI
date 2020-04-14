@@ -4,8 +4,8 @@ from tkinter import *
 import os
 import threading
 
-TLIST = ['타겟리스트초기화']
-SLIST = ['스푸핑리스트초기화']
+TLIST = ['타겟리스트']
+SLIST = ['스푸핑리스트']
 
 def errormassege():
     errorm = Tk()
@@ -16,27 +16,44 @@ def errormassege():
     quitbutton.pack()
     errorm.mainloop()
 
+def off(target, gateway):
+    target = TLIST[target].split()
+    SLIST[TLIST.index(target[0] + ' ' + target[1])] = 0
+    arptable(gateway)
 
 def arpspoof(target, gateway):
     target = TLIST[target].split()
+    def on():
+        arptable(gateway)
+        while (SLIST[TLIST.index(target[0] + ' ' + target[1])] == 1):
+            print(str(target[0])+ ' ' + str(target[1]) + ' ' + str(gateway))
+            time.sleep(5)
     if gateway == 0:
         errormassege()
     else:
-        print(str(target[0])+ ' ' + str(target[1]) + ' ' + str(gateway))
+        SLIST[TLIST.index(target[0] + ' ' + target[1])] = 1
+        atttackthread = threading.Thread(target=on)
+        atttackthread.start()
 
 def myip():
     myip = os.popen('ipconfig').read()
     myip = myip.split()
     return myip[myip.index('IPv4') + 12]
 
-def arptable():
+def arptable(var):
+    gateway = IntVar(value=var)
     def arptable_(i):
         target = TLIST[i].split()
-        targettext = Button(gui, text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: '
-        +target[0]+ ' MAC: ' + target[1], fg='#47C83E', bg='black', font=50, height=1,command=lambda: arpspoof(TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
-        targettext.grid(row=(TLIST.index(target[0] + ' ' + target[1])), column=1)
+        if(SLIST[i] == 1):
+            targettext = Button(gui,
+            text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: '
+            + target[0] + ' MAC: ' + target[1], fg='RED', bg='black', font=50, height=1,command=lambda: off(TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
+            targettext.grid(row=(TLIST.index(target[0] + ' ' + target[1])), column=1)
+        else:
+            targettext = Button(gui, text='[ARPTABLE] NUMBER: ' + str(TLIST.index(target[0] + ' ' + target[1])) + '> IP: '
+            +target[0]+ ' MAC: ' + target[1], fg='#47C83E', bg='black', font=50, height=1,command=lambda: arpspoof(TLIST.index(target[0] + ' ' + target[1]), gateway.get()))
+            targettext.grid(row=(TLIST.index(target[0] + ' ' + target[1])), column=1)
     i = 1
-    gateway = IntVar()
     while(i <= TLIST[0]):
         target = TLIST[i].split()
         gatewaycheck = Checkbutton(gui, variable=gateway, bg='black', onvalue=TLIST.index(target[0] + ' ' + target[1]))
@@ -53,7 +70,9 @@ def multiarp(arg1 ,scanrange):
             target = recv[ARP].psrc + ' ' + recv[Ether].src
             target = target.split()
             global TLIST
+            global SLIST
             TLIST.append(target[0] + ' ' + target[1])
+            SLIST.insert(TLIST.index(target[0] + ' ' + target[1]), 0)
             TLIST[0] = TLIST.index(target[0] + ' ' + target[1])
 
 def arpscan(scanip):
@@ -64,7 +83,7 @@ def arpscan(scanip):
          arpthread.start()
     while (arpthread.is_alive()):
         time.sleep(1)
-    arptable()
+    arptable(0)
 
 def start():
     arpscan(myip())
