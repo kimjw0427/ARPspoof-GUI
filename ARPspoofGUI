@@ -4,15 +4,15 @@ from tkinter import *
 import os
 import threading
 
-TLIST = ['타겟리스트']
-SLIST = ['스푸핑리스트']
+TLIST = ['TargetList']
+SLIST = ['SpoofedList']
 
 def errormassege():
     errorm = Tk()
     gui.resizable(False, False)
-    errortext = Label(errorm, text='게이트웨이를 체크해주세요.')
+    errortext = Label(errorm, text='Check Gateway please.')
     errortext.pack()
-    quitbutton = Button(errorm, text='나가기', command=errorm.destroy)
+    quitbutton = Button(errorm, text='Exit', command=errorm.destroy)
     quitbutton.pack()
     errorm.mainloop()
 
@@ -94,6 +94,6 @@ gui.title("EasyARPspoof")
 gui.geometry('960x540')
 gui.configure(background = 'black')
 gui.resizable(False, False)
-startbutton = Button(gui, text='스캔', command = start,height = 2,bg = 'black', fg = '#47C83E', font = 50, borderwidth = 0)
+startbutton = Button(gui, text='SCAN', command = start,height = 2,bg = 'black', fg = '#47C83E', font = 50, borderwidth = 0)
 startbutton.place(x=900, y= 10)
 gui.mainloop()
